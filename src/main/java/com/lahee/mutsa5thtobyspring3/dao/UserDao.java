@@ -22,14 +22,27 @@ public abstract class UserDao {
 
     }
 
-    public User get(long id) throws SQLException, ClassNotFoundException {
+    public void add(User user) throws ClassNotFoundException, SQLException {
+        Connection conn = getConnection();
+        PreparedStatement pstmt = conn.prepareStatement("insert into user(id, name, password) values(?, ?, ?)");
+        pstmt.setString(1, user.getId());
+        pstmt.setString(2, user.getName());
+        pstmt.setString(3, user.getPassword());
+
+        pstmt.executeUpdate();
+        pstmt.close();
+        conn.close();
+
+    }
+
+    public User get(String id) throws SQLException, ClassNotFoundException {
         Connection con = getConnection();
 
         PreparedStatement pstm = con.prepareStatement("select * from user where id=?");
-        pstm.setLong(1, id);
+        pstm.setString(1, id);
         ResultSet rs = pstm.executeQuery();
         rs.next();
-        User user = new User(rs.getLong("id"), rs.getString("name"), rs.getString("password"));
+        User user = new User(rs.getString("id"), rs.getString("name"), rs.getString("password"));
 
         rs.close();
         pstm.close();
