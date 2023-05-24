@@ -8,9 +8,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Random;
 
-public abstract class UserDao {
+public class UserDao {
+    ConnectionMaker connectionMaker;
+
+    public UserDao() {
+        this.connectionMaker = new DConnectionMaker();
+    }
+
+
     public void add() throws ClassNotFoundException, SQLException {
-        Connection conn = getConnection();
+        Connection conn = connectionMaker.makeConnection();
         PreparedStatement pstmt = conn.prepareStatement("insert into user(id, name, password) values(?, ?, ?)");
         pstmt.setString(1, String.valueOf(new Random().nextInt()));
         pstmt.setString(2, "test");
@@ -23,7 +30,7 @@ public abstract class UserDao {
     }
 
     public void add(User user) throws ClassNotFoundException, SQLException {
-        Connection conn = getConnection();
+        Connection conn = connectionMaker.makeConnection();
         PreparedStatement pstmt = conn.prepareStatement("insert into user(id, name, password) values(?, ?, ?)");
         pstmt.setString(1, user.getId());
         pstmt.setString(2, user.getName());
@@ -36,7 +43,7 @@ public abstract class UserDao {
     }
 
     public User get(String id) throws SQLException, ClassNotFoundException {
-        Connection con = getConnection();
+        Connection con = connectionMaker.makeConnection();
 
         PreparedStatement pstm = con.prepareStatement("select * from user where id=?");
         pstm.setString(1, id);
@@ -51,6 +58,18 @@ public abstract class UserDao {
         return user;
     }
 
-    public abstract Connection getConnection() throws SQLException, ClassNotFoundException;
+    public void delete(String id) throws SQLException, ClassNotFoundException {
+        Connection con = connectionMaker.makeConnection();
+
+        PreparedStatement pstm = con.prepareStatement("delete from user where id = ?");
+        pstm.setString(1, id);
+        pstm.executeUpdate();
+
+        pstm.close();
+        con.close();
+        System.out.println(id+" delete");
+    }
+
+    // public abstract Connection getConnection() throws SQLException, ClassNotFoundException;
 
 }
