@@ -11,8 +11,8 @@ import java.util.Random;
 public class UserDao {
     ConnectionMaker connectionMaker;
 
-    public UserDao() {
-        this.connectionMaker = new DConnectionMaker();
+    public UserDao(ConnectionMaker connection) {
+        this.connectionMaker = connection;
     }
 
 
